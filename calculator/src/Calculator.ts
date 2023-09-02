@@ -25,7 +25,7 @@ export class Calculator {
       if (value === Caracteres.point && this.display.value.length > 0) {
         if (this.#verifyPoint()) return;
       } else {
-        this.#verifyOperator();
+        this.#verifyOperator(value);
       }
 
       this.display.value += value;
@@ -39,14 +39,15 @@ export class Calculator {
   };
 
   #equal = () => {
-    console.log("EQUAL");
+    console.log("EQUAL", eval(this.display.value));
   };
 
-  #verifyOperator = () => {
+  #verifyOperator = (value: string) => {
     const displayValue = this.display.value;
     const lastLetter = displayValue[displayValue.length - 1] as Caracteres;
 
-    if (Object.values(Caracteres).includes(lastLetter)) this.#backspace();
+    if (Object.values(Caracteres).includes(lastLetter) && value === lastLetter)
+      this.#backspace();
   };
 
   #verifyPoint = () => {
