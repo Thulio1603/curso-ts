@@ -1,4 +1,4 @@
-export enum Operators {
+export enum Caracteres {
   add = "+",
   subtract = "-",
   multiply = "*",
@@ -8,3 +8,5 @@ export enum Operators {
   parenthesesLeft = ")",
   backspace = "C",
 }
+
+export const operators = ["+", "-", "*", "/"];

@@ -1,9 +1,8 @@
-import { Operators } from "./types";
+import { Caracteres, operators } from "./types";
 
 /**
  * Função que realiza uma operação específica.
  *
- * @TODO tratar ponto
  * @TODO realizar os calculos
  *
  */
@@ -23,8 +22,11 @@ export class Calculator {
     if (!isNaN(+value)) {
       this.display.value += value;
     } else {
-      // if (this.#verifyOperator(value) && value === Operators.point) return;
-      this.#verifyOperator(value);
+      if (value === Caracteres.point && this.display.value.length > 0) {
+        if (this.#verifyPoint()) return;
+      } else {
+        this.#verifyOperator();
+      }
 
       this.display.value += value;
     }
@@ -40,11 +42,26 @@ export class Calculator {
     console.log("EQUAL");
   };
 
-  #verifyOperator = (operator: string) => {
+  #verifyOperator = () => {
     const displayValue = this.display.value;
-    const lastLetter = displayValue[displayValue.length - 1] as Operators;
+    const lastLetter = displayValue[displayValue.length - 1] as Caracteres;
 
-    if (Object.values(Operators).includes(lastLetter)) this.#backspace();
+    if (Object.values(Caracteres).includes(lastLetter)) this.#backspace();
+  };
+
+  #verifyPoint = () => {
+    let acumulator = "";
+    let numbers;
+
+    for (let value of this.display.value) {
+      acumulator += operators.includes(value) ? " " : value;
+    }
+
+    numbers = acumulator.split(" ");
+
+    if (numbers[numbers.length - 1].includes(Caracteres.point)) return true;
+
+    return false;
   };
 
   renderCalculatorHtml = () => {
@@ -58,7 +75,7 @@ export class Calculator {
     wrapper.classList.add("buttons");
 
     const backspace = document.createElement("button");
-    backspace.textContent = Operators.backspace;
+    backspace.textContent = Caracteres.backspace;
     backspace.addEventListener("click", () => this.#backspace());
 
     const equal = document.createElement("button");
@@ -67,39 +84,39 @@ export class Calculator {
 
     const multiply = document.createElement("button");
     multiply.addEventListener("click", () =>
-      this.#addDisplay(Operators.multiply)
+      this.#addDisplay(Caracteres.multiply)
     );
-    multiply.textContent = Operators.multiply;
+    multiply.textContent = Caracteres.multiply;
 
     const divide = document.createElement("button");
-    divide.addEventListener("click", () => this.#addDisplay(Operators.divide));
-    divide.textContent = Operators.divide;
+    divide.addEventListener("click", () => this.#addDisplay(Caracteres.divide));
+    divide.textContent = Caracteres.divide;
 
     const add = document.createElement("button");
-    add.addEventListener("click", () => this.#addDisplay(Operators.add));
-    add.textContent = Operators.add;
+    add.addEventListener("click", () => this.#addDisplay(Caracteres.add));
+    add.textContent = Caracteres.add;
 
     const subtract = document.createElement("button");
     subtract.addEventListener("click", () =>
-      this.#addDisplay(Operators.subtract)
+      this.#addDisplay(Caracteres.subtract)
     );
-    subtract.textContent = Operators.subtract;
+    subtract.textContent = Caracteres.subtract;
 
     const point = document.createElement("button");
-    point.addEventListener("click", () => this.#addDisplay(Operators.point));
-    point.textContent = Operators.point;
+    point.addEventListener("click", () => this.#addDisplay(Caracteres.point));
+    point.textContent = Caracteres.point;
 
     const parenthesesRight = document.createElement("button");
     parenthesesRight.addEventListener("click", () =>
-      this.#addDisplay(Operators.parenthesesRight)
+      this.#addDisplay(Caracteres.parenthesesRight)
     );
-    parenthesesRight.textContent = Operators.parenthesesRight;
+    parenthesesRight.textContent = Caracteres.parenthesesRight;
 
     const parenthesesLeft = document.createElement("button");
     parenthesesLeft.addEventListener("click", () =>
-      this.#addDisplay(Operators.parenthesesLeft)
+      this.#addDisplay(Caracteres.parenthesesLeft)
     );
-    parenthesesLeft.textContent = Operators.parenthesesLeft;
+    parenthesesLeft.textContent = Caracteres.parenthesesLeft;
 
     for (let number of numbers) {
       const button = document.createElement("button");
