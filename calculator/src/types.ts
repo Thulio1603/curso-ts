@@ -7,6 +7,7 @@ export enum Caracteres {
   parenthesesRight = "(",
   parenthesesLeft = ")",
   backspace = "C",
+  equal = "=",
 }
 
 export const operators = ["+", "-", "*", "/"];

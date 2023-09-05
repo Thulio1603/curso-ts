@@ -9,11 +9,15 @@ import { Caracteres, operators } from "./types";
 
 export class Calculator {
   display: HTMLInputElement;
+  numbers: number[];
 
   constructor() {
     this.display = document.createElement("input");
     this.display.classList.add("display");
     this.display.setAttribute("type", "text");
+    this.numbers = Array(10)
+      .fill(0)
+      .map((_, index) => index);
 
     document.body.append(this.display);
   }
@@ -65,12 +69,32 @@ export class Calculator {
     return false;
   };
 
+  #addEventListener = () => {
+    document.addEventListener("keydown", (event) => {
+      if (
+        this.numbers.includes(+event.key) ||
+        operators.includes(event.key) ||
+        Object.values(Caracteres).includes(event.key as any)
+      ) {
+        if (event.key === Caracteres.equal) {
+          this.#equal();
+        } else {
+          this.display.value += event.key;
+        }
+      }
+
+      if (event.key === "Backspace" || event.key.toUpperCase() === "C") {
+        this.#backspace();
+      }
+
+      if (event.key === "Enter") {
+        this.#equal();
+      }
+    });
+  };
+
   renderCalculatorHtml = () => {
     const fragment = document.createDocumentFragment();
-
-    const numbers = Array(10)
-      .fill(0)
-      .map((_, index) => index);
 
     const wrapper = document.createElement("div");
     wrapper.classList.add("buttons");
@@ -80,7 +104,7 @@ export class Calculator {
     backspace.addEventListener("click", () => this.#backspace());
 
     const equal = document.createElement("button");
-    equal.textContent = "=";
+    equal.textContent = Caracteres.equal;
     equal.addEventListener("click", () => this.#equal());
 
     const multiply = document.createElement("button");
@@ -119,7 +143,7 @@ export class Calculator {
     );
     parenthesesLeft.textContent = Caracteres.parenthesesLeft;
 
-    for (let number of numbers) {
+    for (let number of this.numbers) {
       const button = document.createElement("button");
       button.textContent = number.toString();
       button.addEventListener("click", () =>
@@ -141,5 +165,7 @@ export class Calculator {
     wrapper.appendChild(fragment);
 
     document.body.append(wrapper);
+
+    this.#addEventListener();
   };
 }
