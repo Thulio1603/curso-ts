@@ -42,14 +42,90 @@ export class Calculator {
     this.display.value = displayValue.slice(0, -1);
   };
 
+  #invertString = (value: string) => {
+    let newValue = "";
+    for (let i = value.length - 1; i >= 0; i--) {
+      newValue += value[i];
+    }
+
+    return newValue;
+  };
+
+  #solveMultiplyAndDivide = (valueDisplay: string) => {
+    let value = valueDisplay;
+    let flag = false;
+
+    for (let i = 0; i <= valueDisplay.length; i++) {
+      if (value[i] === Characters.multiply || value[i] === Characters.divide) {
+        let previousNumber = "";
+        let nextNumber = "";
+
+        for (let j = i - 1; value.length; j--) {
+          if (!isNaN(+value[j]) || value[j] === Characters.point) {
+            previousNumber += value[j];
+          } else {
+            break;
+          }
+        }
+
+        for (let j = i + 1; value.length; j++) {
+          if (!isNaN(+value[j]) || value[j] === Characters.point) {
+            nextNumber += value[j];
+          } else if (
+            value[j] === Characters.multiply ||
+            value[j] === Characters.divide
+          ) {
+            flag = true;
+            break;
+          } else {
+            break;
+          }
+        }
+
+        previousNumber = this.#invertString(previousNumber);
+
+        const operation =
+          value[i] === Characters.multiply
+            ? +previousNumber * +nextNumber
+            : +previousNumber / +nextNumber;
+
+        const operator =
+          value[i] === Characters.multiply
+            ? Characters.multiply.valueOf()
+            : Characters.divide.valueOf();
+
+        value = value.replace(
+          `${previousNumber}${operator}${nextNumber}`,
+          `${operation}`
+        );
+
+        if (flag) {
+          // restart because finded a operator
+          i = 0;
+          flag = false;
+        }
+      }
+    }
+
+    return value;
+  };
+
   #equal = () => {
-    // console.log("EQUAL", eval(this.display.value));
     if (this.#verifySintax()) {
       return alert("Por favor, revise a sintaxe da operação");
     }
 
-    let number1: number | null;
-    let number2: number | null;
+    const start = performance.now();
+    const number = this.#solveMultiplyAndDivide(this.display.value);
+    const end = performance.now();
+
+    const startEval = performance.now();
+    eval(this.display.value);
+    const evalEnd = performance.now();
+
+    console.log(`Levei ${start - end}s e o resultado foi ${number}`);
+
+    console.log(`Eval() ${startEval - evalEnd}s e o resultado foi ${number}`);
   };
 
   #verifySintax = () => {
@@ -140,7 +216,10 @@ export class Calculator {
         }
       }
 
-      if (event.key === "Backspace" || event.key.toUpperCase() === "C") {
+      if (
+        event.key === "Backspace" ||
+        event.key.toUpperCase() === Characters.backspace.valueOf()
+      ) {
         this.#backspace();
       }
 
