@@ -1,4 +1,4 @@
-import { Caracteres, operators } from "./types";
+import { Characters, operators } from "./types";
 
 /**
  * Função que realiza uma operação específica.
@@ -26,7 +26,7 @@ export class Calculator {
     if (!isNaN(+value)) {
       this.display.value += value;
     } else {
-      if (value === Caracteres.point && this.display.value.length > 0) {
+      if (value === Characters.point && this.display.value.length > 0) {
         if (this.#verifyPoint()) return;
       } else {
         this.#verifyOperator(value);
@@ -44,22 +44,49 @@ export class Calculator {
 
   #equal = () => {
     // console.log("EQUAL", eval(this.display.value));
-    let number1: number | null;
-    let number2: number | null;
-
     if (this.#verifySintax()) {
       return alert("Por favor, revise a sintaxe da operação");
     }
+
+    let number1: number | null;
+    let number2: number | null;
   };
 
   #verifySintax = () => {
+    let parenthesesLeft = 0;
+    let parenthesesRight = 0;
+    let checkOperator = false;
+
     for (let value of this.display.value) {
-      if (
-        !Object.values(Caracteres).includes(value as Caracteres) ||
-        !operators.includes(value)
-      ) {
+      // check if last character is operator
+      if (operators.includes(value) && checkOperator) {
         return true;
+      } else {
+        checkOperator = false;
       }
+
+      if (value === Characters.parenthesesRight) {
+        parenthesesRight += 1;
+      }
+
+      if (value === Characters.parenthesesLeft) {
+        parenthesesLeft += 1;
+      }
+
+      if (
+        Object.values(Characters).includes(value as Characters) ||
+        operators.includes(value) ||
+        !isNaN(+value)
+      ) {
+        if (operators.includes(value)) checkOperator = true;
+        continue;
+      }
+
+      return true;
+    }
+
+    if (parenthesesRight !== parenthesesLeft) {
+      return true;
     }
 
     return false;
@@ -67,9 +94,20 @@ export class Calculator {
 
   #verifyOperator = (value: string) => {
     const displayValue = this.display.value;
-    const lastLetter = displayValue[displayValue.length - 1] as Caracteres;
+    const lastLetter = displayValue[displayValue.length - 1] as Characters;
 
-    if (Object.values(Caracteres).includes(lastLetter) && value === lastLetter)
+    if (
+      value === Characters.parenthesesRight ||
+      value === Characters.parenthesesLeft
+    ) {
+      return;
+    }
+
+    if (
+      (Object.values(Characters).includes(lastLetter) &&
+        value === lastLetter) ||
+      operators.includes(lastLetter)
+    )
       this.#backspace();
   };
 
@@ -83,7 +121,7 @@ export class Calculator {
 
     numbers = acumulator.split(" ");
 
-    if (numbers[numbers.length - 1].includes(Caracteres.point)) return true;
+    if (numbers[numbers.length - 1].includes(Characters.point)) return true;
 
     return false;
   };
@@ -93,9 +131,9 @@ export class Calculator {
       if (
         this.numbers.includes(+event.key) ||
         operators.includes(event.key) ||
-        Object.values(Caracteres).includes(event.key as any)
+        Object.values(Characters).includes(event.key as any)
       ) {
-        if (event.key === Caracteres.equal) {
+        if (event.key === Characters.equal) {
           this.#equal();
         } else {
           this.display.value += event.key;
@@ -119,48 +157,48 @@ export class Calculator {
     wrapper.classList.add("buttons");
 
     const backspace = document.createElement("button");
-    backspace.textContent = Caracteres.backspace;
+    backspace.textContent = Characters.backspace;
     backspace.addEventListener("click", () => this.#backspace());
 
     const equal = document.createElement("button");
-    equal.textContent = Caracteres.equal;
+    equal.textContent = Characters.equal;
     equal.addEventListener("click", () => this.#equal());
 
     const multiply = document.createElement("button");
     multiply.addEventListener("click", () =>
-      this.#addDisplay(Caracteres.multiply)
+      this.#addDisplay(Characters.multiply)
     );
-    multiply.textContent = Caracteres.multiply;
+    multiply.textContent = Characters.multiply;
 
     const divide = document.createElement("button");
-    divide.addEventListener("click", () => this.#addDisplay(Caracteres.divide));
-    divide.textContent = Caracteres.divide;
+    divide.addEventListener("click", () => this.#addDisplay(Characters.divide));
+    divide.textContent = Characters.divide;
 
     const add = document.createElement("button");
-    add.addEventListener("click", () => this.#addDisplay(Caracteres.add));
-    add.textContent = Caracteres.add;
+    add.addEventListener("click", () => this.#addDisplay(Characters.add));
+    add.textContent = Characters.add;
 
     const subtract = document.createElement("button");
     subtract.addEventListener("click", () =>
-      this.#addDisplay(Caracteres.subtract)
+      this.#addDisplay(Characters.subtract)
     );
-    subtract.textContent = Caracteres.subtract;
+    subtract.textContent = Characters.subtract;
 
     const point = document.createElement("button");
-    point.addEventListener("click", () => this.#addDisplay(Caracteres.point));
-    point.textContent = Caracteres.point;
+    point.addEventListener("click", () => this.#addDisplay(Characters.point));
+    point.textContent = Characters.point;
 
     const parenthesesRight = document.createElement("button");
     parenthesesRight.addEventListener("click", () =>
-      this.#addDisplay(Caracteres.parenthesesRight)
+      this.#addDisplay(Characters.parenthesesRight)
     );
-    parenthesesRight.textContent = Caracteres.parenthesesRight;
+    parenthesesRight.textContent = Characters.parenthesesRight;
 
     const parenthesesLeft = document.createElement("button");
     parenthesesLeft.addEventListener("click", () =>
-      this.#addDisplay(Caracteres.parenthesesLeft)
+      this.#addDisplay(Characters.parenthesesLeft)
     );
-    parenthesesLeft.textContent = Caracteres.parenthesesLeft;
+    parenthesesLeft.textContent = Characters.parenthesesLeft;
 
     for (let number of this.numbers) {
       const button = document.createElement("button");

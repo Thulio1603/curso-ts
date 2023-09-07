@@ -1,4 +1,4 @@
-export enum Caracteres {
+export enum Characters {
   add = "+",
   subtract = "-",
   multiply = "*",
