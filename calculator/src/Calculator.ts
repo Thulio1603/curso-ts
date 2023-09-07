@@ -43,7 +43,26 @@ export class Calculator {
   };
 
   #equal = () => {
-    console.log("EQUAL", eval(this.display.value));
+    // console.log("EQUAL", eval(this.display.value));
+    let number1: number | null;
+    let number2: number | null;
+
+    if (this.#verifySintax()) {
+      return alert("Por favor, revise a sintaxe da operação");
+    }
+  };
+
+  #verifySintax = () => {
+    for (let value of this.display.value) {
+      if (
+        !Object.values(Caracteres).includes(value as Caracteres) ||
+        !operators.includes(value)
+      ) {
+        return true;
+      }
+    }
+
+    return false;
   };
 
   #verifyOperator = (value: string) => {
