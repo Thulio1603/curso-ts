@@ -120,12 +120,14 @@ export class Calculator {
     const end = performance.now();
 
     const startEval = performance.now();
-    eval(this.display.value);
+    const numberEval = eval(this.display.value);
     const evalEnd = performance.now();
 
     console.log(`Levei ${start - end}s e o resultado foi ${number}`);
 
-    console.log(`Eval() ${startEval - evalEnd}s e o resultado foi ${number}`);
+    console.log(
+      `Eval() ${startEval - evalEnd}s e o resultado foi ${eval(numberEval)}`
+    );
   };
 
   #verifySintax = () => {
